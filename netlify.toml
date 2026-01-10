@@ -1,0 +1,11 @@
+[build]
+  publish = "public"
+  functions = "netlify/functions"
+
+[functions]
+  included_files = ["netlify/functions/**"]
+
+[[redirects]]
+  from = "/"
+  to = "/.netlify/functions/chat"
+  status = 200
