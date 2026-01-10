@@ -1,4 +1,5 @@
 import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.21.0";
+import { marked } from "https://esm.sh/marked@15.0.6";
 
 export default async (request, context) => {
   let history = [];
@@ -76,14 +77,23 @@ function escapeHtml(text) {
     .replace(/"/g, "&quot;");
 }
 
+function parseMarkdown(text) {
+  // Configure marked for safety
+  marked.setOptions({
+    breaks: true, // Convert \n to <br>
+    gfm: true,    // GitHub Flavored Markdown
+  });
+  return marked.parse(text);
+}
+
 function generateHTML(history, error) {
   let messagesHtml = "";
   if (history.length > 0) {
     for (const msg of history) {
       const userText = escapeHtml(msg.user);
-      const botText = escapeHtml(msg.bot).replace(/\n/g, "<br>");
+      const botText = parseMarkdown(msg.bot);
       messagesHtml += `<div class="message user-msg">${userText}</div>\n`;
-      messagesHtml += `<div class="message bot-msg">${botText}</div>\n`;
+      messagesHtml += `<div class="message bot-msg"><div class="markdown-content">${botText}</div></div>\n`;
     }
   } else {
     messagesHtml = '<p class="empty">No messages yet. Start chatting!</p>';
@@ -183,6 +193,76 @@ function generateHTML(history, error) {
             color: #666;
             font-style: italic;
             margin-bottom: 15px;
+        }
+        /* Markdown styles */
+        .markdown-content {
+            overflow-wrap: break-word;
+        }
+        .markdown-content p {
+            margin-bottom: 10px;
+        }
+        .markdown-content p:last-child {
+            margin-bottom: 0;
+        }
+        .markdown-content h1, .markdown-content h2, .markdown-content h3,
+        .markdown-content h4, .markdown-content h5, .markdown-content h6 {
+            margin: 15px 0 10px 0;
+            font-weight: bold;
+        }
+        .markdown-content h1 { font-size: 1.4em; }
+        .markdown-content h2 { font-size: 1.3em; }
+        .markdown-content h3 { font-size: 1.2em; }
+        .markdown-content code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .markdown-content pre {
+            background: #f4f4f4;
+            padding: 12px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .markdown-content pre code {
+            background: none;
+            padding: 0;
+        }
+        .markdown-content ul, .markdown-content ol {
+            margin: 10px 0;
+            padding-left: 25px;
+        }
+        .markdown-content li {
+            margin-bottom: 5px;
+        }
+        .markdown-content blockquote {
+            border-left: 3px solid #ccc;
+            margin: 10px 0;
+            padding-left: 15px;
+            color: #555;
+        }
+        .markdown-content a {
+            color: #0066cc;
+        }
+        .markdown-content table {
+            border-collapse: collapse;
+            margin: 10px 0;
+            width: 100%;
+        }
+        .markdown-content th, .markdown-content td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            text-align: left;
+        }
+        .markdown-content th {
+            background: #f4f4f4;
+        }
+        .markdown-content hr {
+            border: none;
+            border-top: 1px solid #ccc;
+            margin: 15px 0;
         }
     </style>
 </head>
