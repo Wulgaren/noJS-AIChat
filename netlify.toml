@@ -2,9 +2,6 @@
   publish = "public"
   functions = "netlify/functions"
 
-[functions]
-  python_bundler = "pip"
-
 [[redirects]]
   from = "/"
   to = "/.netlify/functions/chat"

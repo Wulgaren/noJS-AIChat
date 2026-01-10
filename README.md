@@ -1,10 +1,10 @@
 # No-JS AI Chatbot for Netlify (Kindle-Friendly)
 
-A simple AI chatbot using Google Gemini 2.5 Flash that works without JavaScript - perfect for Kindle's Experimental Browser! Hosted free on Netlify.
+A simple AI chatbot using Google Gemini 2.5 Flash that works without JavaScript on the client - perfect for Kindle's Experimental Browser! Hosted free on Netlify.
 
 ## Features
 
-- ✅ **Zero JavaScript** - Pure HTML forms, works on Kindle
+- ✅ **Zero client-side JavaScript** - Pure HTML forms, works on Kindle
 - ✅ **Free hosting** - Netlify free tier
 - ✅ **Free AI** - Gemini API free tier
 - ✅ **Conversation memory** - Chat history preserved via form data
@@ -21,33 +21,14 @@ A simple AI chatbot using Google Gemini 2.5 Flash that works without JavaScript 
 
 ### 2. Deploy to Netlify
 
-#### Option A: Deploy via GitHub (Recommended)
-
-1. Push this code to a GitHub repository
+1. Fork/clone this repo to your GitHub
 2. Go to [netlify.com](https://netlify.com) and sign up/log in
 3. Click "Add new site" → "Import an existing project"
 4. Connect your GitHub and select the repo
-5. In Build settings, leave defaults
-6. Click "Add environment variables"
+5. Click "Add environment variables"
    - Key: `GEMINI_API_KEY`
    - Value: *your API key from step 1*
-7. Click "Deploy"
-
-#### Option B: Deploy via Netlify CLI
-
-```bash
-# Install Netlify CLI
-npm install -g netlify-cli
-
-# Login to Netlify
-netlify login
-
-# Deploy (from project directory)
-netlify deploy --prod
-
-# Set environment variable
-netlify env:set GEMINI_API_KEY "your-api-key-here"
-```
+6. Click "Deploy"
 
 ### 3. Access on Kindle
 
@@ -57,40 +38,34 @@ netlify env:set GEMINI_API_KEY "your-api-key-here"
 
 ## How It Works
 
-Since Netlify runs serverless functions (not persistent servers), the chat history is stored in a hidden form field. Each time you send a message:
+The chat interface uses pure HTML forms - no JavaScript runs in the browser. The serverless function on Netlify:
 
-1. The form submits the message + chat history to the function
-2. The function calls Gemini API with full conversation context
-3. The function returns a new HTML page with updated history
-4. No JavaScript needed!
+1. Receives form submission with message + chat history
+2. Calls Gemini API with full conversation context
+3. Returns a fresh HTML page with the response
+4. Chat history is stored in a hidden form field
 
 ## Project Structure
 
 ```
 ├── netlify/
 │   └── functions/
-│       └── chat.py      # Serverless function
+│       └── chat.js       # Serverless function
 ├── public/
-│   └── index.html       # Redirect to function
-├── netlify.toml         # Netlify config
-├── requirements.txt     # Python dependencies
+│   └── index.html        # Redirect to function
+├── netlify.toml          # Netlify config
+├── package.json          # Dependencies
 └── README.md
 ```
 
-## Gemini Free Tier Limits
+## Free Tier Limits
 
-- 15 requests per minute
-- 1 million tokens per minute  
-- 1,500 requests per day
+| Service | Free Allowance |
+|---------|----------------|
+| Netlify | 125k function invocations/month |
+| Gemini | 1,500 requests/day |
 
-More than enough for personal use!
-
-## Netlify Free Tier Limits
-
-- 125,000 function invocations/month
-- 100 hours of function runtime/month
-
-Also plenty for personal use!
+Plenty for personal use!
 
 ## Tips for Kindle
 
