@@ -161,11 +161,12 @@ function generateHTML(history, error) {
         form {
             margin-bottom: 10px;
         }
-        input[type="text"] {
+        textarea {
             width: 100%;
+            height: 80px;
             font-size: 18px;
             font-family: Georgia, serif;
-            padding: 10px;
+            padding: 8px;
             border: 2px solid #000;
             margin-bottom: 10px;
         }
@@ -271,7 +272,7 @@ function generateHTML(history, error) {
             h1 {
                 font-size: 28px;
             }
-            input[type="text"] {
+            textarea {
                 font-size: 22px;
             }
             button {
@@ -293,9 +294,9 @@ function generateHTML(history, error) {
         ${messagesHtml}
     </div>
     
-    <form method="POST">
+    <form method="POST" id="chatform">
         <input type="hidden" name="history" value="${historyJson}">
-        <input type="text" name="message" placeholder="Type your message... (Enter to send)" autocomplete="off">
+        <textarea name="message" placeholder="Type your message..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.form.submit()}"></textarea>
         <br>
         <button type="submit">Send</button>
         <button type="submit" name="clear" value="1" class="clear-btn">Clear Chat</button>
