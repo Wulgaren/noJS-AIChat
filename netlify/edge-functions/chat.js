@@ -161,12 +161,11 @@ function generateHTML(history, error) {
         form {
             margin-bottom: 10px;
         }
-        textarea {
+        input[type="text"] {
             width: 100%;
-            height: 80px;
             font-size: 18px;
             font-family: Georgia, serif;
-            padding: 8px;
+            padding: 10px;
             border: 2px solid #000;
             margin-bottom: 10px;
         }
@@ -264,6 +263,25 @@ function generateHTML(history, error) {
             border-top: 1px solid #ccc;
             margin: 15px 0;
         }
+        /* Larger fonts for smaller devices like Kindle */
+        @media (max-width: 600px) {
+            body {
+                font-size: 22px;
+            }
+            h1 {
+                font-size: 28px;
+            }
+            input[type="text"] {
+                font-size: 22px;
+            }
+            button {
+                font-size: 22px;
+                padding: 12px 24px;
+            }
+            .markdown-content h1 { font-size: 1.5em; }
+            .markdown-content h2 { font-size: 1.4em; }
+            .markdown-content h3 { font-size: 1.3em; }
+        }
     </style>
 </head>
 <body>
@@ -277,7 +295,7 @@ function generateHTML(history, error) {
     
     <form method="POST">
         <input type="hidden" name="history" value="${historyJson}">
-        <textarea name="message" placeholder="Type your message..."></textarea>
+        <input type="text" name="message" placeholder="Type your message... (Enter to send)" autocomplete="off">
         <br>
         <button type="submit">Send</button>
         <button type="submit" name="clear" value="1" class="clear-btn">Clear Chat</button>
