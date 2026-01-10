@@ -1,8 +1,6 @@
 [build]
   publish = "public"
-  functions = "netlify/functions"
 
-[[redirects]]
-  from = "/"
-  to = "/.netlify/functions/chat"
-  status = 200
+[[edge_functions]]
+  function = "chat"
+  path = "/"

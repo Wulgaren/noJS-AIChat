@@ -1,30 +1,30 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+import { GoogleGenerativeAI } from "https://esm.sh/@google/generative-ai@0.21.0";
 
-exports.handler = async (event) => {
+export default async (request, context) => {
   let history = [];
   let error = null;
 
   // Handle POST request
-  if (event.httpMethod === "POST") {
-    const params = new URLSearchParams(event.body);
+  if (request.method === "POST") {
+    const formData = await request.formData();
 
     // Check for clear action
-    if (params.has("clear")) {
+    if (formData.has("clear")) {
       history = [];
     } else {
       // Restore history from hidden field
       try {
-        history = JSON.parse(params.get("history") || "[]");
+        history = JSON.parse(formData.get("history") || "[]");
       } catch {
         history = [];
       }
 
       // Get new message
-      const userMessage = (params.get("message") || "").trim();
+      const userMessage = (formData.get("message") || "").trim();
 
       if (userMessage) {
         try {
-          const apiKey = process.env.GEMINI_API_KEY;
+          const apiKey = Deno.env.get("GEMINI_API_KEY");
           if (!apiKey) {
             throw new Error("GEMINI_API_KEY not configured");
           }
@@ -61,14 +61,12 @@ exports.handler = async (event) => {
   // Generate HTML
   const html = generateHTML(history, error);
 
-  return {
-    statusCode: 200,
-    headers: {
-      "Content-Type": "text/html; charset=utf-8",
-    },
-    body: html,
-  };
+  return new Response(html, {
+    headers: { "Content-Type": "text/html; charset=utf-8" },
+  });
 };
+
+export const config = { path: "/" };
 
 function escapeHtml(text) {
   return text
@@ -79,7 +77,6 @@ function escapeHtml(text) {
 }
 
 function generateHTML(history, error) {
-  // Build chat messages HTML
   let messagesHtml = "";
   if (history.length > 0) {
     for (const msg of history) {
@@ -92,12 +89,10 @@ function generateHTML(history, error) {
     messagesHtml = '<p class="empty">No messages yet. Start chatting!</p>';
   }
 
-  // Error HTML
   const errorHtml = error
     ? `<div class="error">${escapeHtml(error)}</div>`
     : "";
 
-  // Serialize history for hidden field
   const historyJson = escapeHtml(JSON.stringify(history));
 
   return `<!DOCTYPE html>
@@ -200,7 +195,7 @@ function generateHTML(history, error) {
         ${messagesHtml}
     </div>
     
-    <form method="POST" action="/.netlify/functions/chat">
+    <form method="POST">
         <input type="hidden" name="history" value="${historyJson}">
         <textarea name="message" placeholder="Type your message..."></textarea>
         <br>

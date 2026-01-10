@@ -1,8 +1,0 @@
-{
-  "name": "nojs-aichat",
-  "version": "1.0.0",
-  "description": "No-JS AI Chatbot for Kindle using Gemini",
-  "dependencies": {
-    "@google/generative-ai": "^0.21.0"
-  }
-}
