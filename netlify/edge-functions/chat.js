@@ -33,7 +33,7 @@ export default async (request, context) => {
           // Initialize Gemini with Google Search grounding
           const genAI = new GoogleGenerativeAI(apiKey);
           const model = genAI.getGenerativeModel({ 
-            model: "gemini-3-flash",
+            model: "gemini-3.0-flash",
             tools: [{ googleSearch: {} }]
           });
 
