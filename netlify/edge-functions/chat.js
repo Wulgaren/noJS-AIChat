@@ -30,9 +30,12 @@ export default async (request, context) => {
             throw new Error("GEMINI_API_KEY not configured");
           }
 
-          // Initialize Gemini
+          // Initialize Gemini with Google Search grounding
           const genAI = new GoogleGenerativeAI(apiKey);
-          const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+          const model = genAI.getGenerativeModel({ 
+            model: "gemini-2.5-flash",
+            tools: [{ googleSearch: {} }]
+          });
 
           // Build conversation history for Gemini
           const chatHistory = history.flatMap((msg) => [
