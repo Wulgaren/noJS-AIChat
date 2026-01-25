@@ -164,9 +164,8 @@ function generateHTML(history, error) {
         form {
             margin-bottom: 10px;
         }
-        textarea {
+        input[type="text"] {
             width: 100%;
-            height: 80px;
             font-size: 18px;
             font-family: Georgia, serif;
             padding: 8px;
@@ -275,7 +274,7 @@ function generateHTML(history, error) {
             h1 {
                 font-size: 28px;
             }
-            textarea {
+            input[type="text"] {
                 font-size: 22px;
             }
             button {
@@ -299,7 +298,7 @@ function generateHTML(history, error) {
     
     <form method="POST" id="chatform">
         <input type="hidden" name="history" value="${historyJson}">
-        <textarea name="message" placeholder="Type your message..." onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();this.form.submit()}"></textarea>
+        <input type="text" name="message" placeholder="Type your message...">
         <br>
         <button type="submit">Send</button>
         <button type="submit" name="clear" value="1" class="clear-btn">Clear Chat</button>
