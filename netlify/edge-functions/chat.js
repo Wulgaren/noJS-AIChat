@@ -92,7 +92,8 @@ function parseMarkdown(text) {
 function generateHTML(history, error) {
   let messagesHtml = "";
   if (history.length > 0) {
-    for (const msg of history) {
+    const newestFirst = [...history].reverse();
+    for (const msg of newestFirst) {
       const userText = escapeHtml(msg.user);
       const botText = parseMarkdown(msg.bot);
       messagesHtml += `<div class="message user-msg">${userText}</div>\n`;
