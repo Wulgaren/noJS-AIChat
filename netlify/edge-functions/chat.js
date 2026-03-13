@@ -96,8 +96,8 @@ function generateHTML(history, error) {
     for (const msg of newestFirst) {
       const userText = escapeHtml(msg.user);
       const botText = parseMarkdown(msg.bot);
-      messagesHtml += `<div class="message user-msg">${userText}</div>\n`;
       messagesHtml += `<div class="message bot-msg"><div class="markdown-content">${botText}</div></div>\n`;
+      messagesHtml += `<div class="message user-msg">${userText}</div>\n`;
     }
   } else {
     messagesHtml = '<p class="empty">No messages yet. Start chatting!</p>';
@@ -293,10 +293,6 @@ function generateHTML(history, error) {
     
     ${errorHtml}
     
-    <div class="chat-box">
-        ${messagesHtml}
-    </div>
-    
     <form method="POST" id="chatform">
         <input type="hidden" name="history" value="${historyJson}">
         <input type="text" name="message" placeholder="Type your message...">
@@ -304,6 +300,10 @@ function generateHTML(history, error) {
         <button type="submit">Send</button>
         <button type="submit" name="clear" value="1" class="clear-btn">Clear Chat</button>
     </form>
+    
+    <div class="chat-box">
+        ${messagesHtml}
+    </div>
 </body>
 </html>`;
 }
