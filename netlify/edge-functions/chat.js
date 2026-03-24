@@ -129,7 +129,7 @@ function generateHTML(history, error) {
             color: #000;
             max-width: 600px;
             margin: 0 auto;
-            padding: 10px;
+            padding: 10px 10px 150px;
         }
         h1 {
             font-size: 24px;
@@ -163,7 +163,16 @@ function generateHTML(history, error) {
             margin-bottom: 5px;
         }
         form {
-            margin-bottom: 10px;
+            position: fixed;
+            left: 50%;
+            bottom: 0;
+            transform: translateX(-50%);
+            width: min(calc(100% - 20px), 600px);
+            background: #fff;
+            border-top: 2px solid #000;
+            box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.08);
+            padding: 12px 10px calc(12px + env(safe-area-inset-bottom));
+            margin-bottom: 0;
         }
         input[type="text"] {
             width: 100%;
@@ -173,6 +182,12 @@ function generateHTML(history, error) {
             border: 2px solid #000;
             margin-bottom: 10px;
         }
+        .form-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
         button {
             font-size: 18px;
             padding: 10px 20px;
@@ -180,11 +195,37 @@ function generateHTML(history, error) {
             color: #fff;
             border: none;
             cursor: pointer;
-            margin-right: 10px;
-            margin-bottom: 10px;
+            margin: 0;
+        }
+        button:disabled {
+            opacity: 0.7;
+            cursor: wait;
         }
         .clear-btn {
             background: #666;
+        }
+        .loading-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            color: #333;
+            font-size: 16px;
+        }
+        .loading-indicator.visible {
+            display: inline-flex;
+        }
+        .spinner {
+            width: 18px;
+            height: 18px;
+            border: 2px solid #ccc;
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
         }
         .error {
             background: #ffcccc;
@@ -271,9 +312,13 @@ function generateHTML(history, error) {
         @media (max-width: 600px) {
             body {
                 font-size: 22px;
+                padding: 10px 10px 190px;
             }
             h1 {
                 font-size: 28px;
+            }
+            form {
+                width: calc(100% - 20px);
             }
             input[type="text"] {
                 font-size: 22px;
@@ -281,6 +326,9 @@ function generateHTML(history, error) {
             button {
                 font-size: 22px;
                 padding: 12px 24px;
+            }
+            .loading-indicator {
+                font-size: 18px;
             }
             .markdown-content h1 { font-size: 1.5em; }
             .markdown-content h2 { font-size: 1.4em; }
@@ -293,17 +341,62 @@ function generateHTML(history, error) {
     
     ${errorHtml}
     
-    <form method="POST" id="chatform">
-        <input type="hidden" name="history" value="${historyJson}">
-        <input type="text" name="message" placeholder="Type your message...">
-        <br>
-        <button type="submit">Send</button>
-        <button type="submit" name="clear" value="1" class="clear-btn">Clear Chat</button>
-    </form>
-    
     <div class="chat-box">
         ${messagesHtml}
     </div>
+    
+    <form method="POST" id="chatform">
+        <input type="hidden" name="history" value="${historyJson}">
+        <input type="text" name="message" placeholder="Type your message...">
+        <div class="form-actions">
+            <button type="submit" id="send-btn">Send</button>
+            <button type="submit" name="clear" value="1" class="clear-btn" id="clear-btn">Clear Chat</button>
+            <span class="loading-indicator" id="loading-indicator" role="status" aria-live="polite" aria-hidden="true">
+                <span class="spinner" aria-hidden="true"></span>
+                <span>Sending...</span>
+            </span>
+        </div>
+    </form>
+    
+    <script>
+        (() => {
+            const form = document.getElementById("chatform");
+            const messageInput = form.querySelector('input[name="message"]');
+            const sendButton = document.getElementById("send-btn");
+            const clearButton = document.getElementById("clear-btn");
+            const loadingIndicator = document.getElementById("loading-indicator");
+            let pendingAction = "send";
+
+            sendButton.addEventListener("click", () => {
+                pendingAction = "send";
+            });
+
+            clearButton.addEventListener("click", () => {
+                pendingAction = "clear";
+            });
+
+            messageInput.addEventListener("keydown", (event) => {
+                if (event.key === "Enter") {
+                    pendingAction = "send";
+                }
+            });
+
+            form.addEventListener("submit", (event) => {
+                const submitter = event.submitter;
+                const isClear = submitter ? submitter === clearButton : pendingAction === "clear";
+
+                if (isClear || !messageInput.value.trim()) {
+                    return;
+                }
+
+                loadingIndicator.classList.add("visible");
+                loadingIndicator.setAttribute("aria-hidden", "false");
+                sendButton.disabled = true;
+                clearButton.disabled = true;
+                messageInput.readOnly = true;
+            });
+        })();
+    </script>
 </body>
 </html>`;
 }
